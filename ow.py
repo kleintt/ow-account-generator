@@ -5,13 +5,12 @@ Created on Tue Feb  4 19:24:27 2020
 @author: Yongyao SUN
 """
 
-import requests
-import json
+
 import random
 import time
 import names
 import string
-from fake_useragent import UserAgent
+import cloudscraper
 
 def loadProxyUserPass(filename):
     proxyList = []
@@ -40,108 +39,91 @@ def loadProxyIpAuth(filename):
             proxyList.append(proxies)
     return proxyList 
 
-def regist(name,ran_num,domain,pw):
+def regist(name, ran_num, domain, pw, captcha_api):
     email = str(name)+str(ran_num)+str(domain)
-    email = email.replace(' ','')
-    s =requests.session()
-    ua = UserAgent()
-    headers = {'authority':'www.off---white.com',
-               'scheme':'https',
-               'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-               'accept-encoding':'gzip, deflate, br',
-               'accept-language':'zh-CN,zh;q=0.9,de;q=0.8',
-               'cache-control':'max-age=0',
-               'sec-fetch-mode': 'navigate',
-               'sec-fetch-site': 'none',
-               'sec-fetch-user': '?1',
-               'upgrade-insecure-requests':'1',
-               'user-agent':ua.random
-               }
+    email = email.replace(' ', '')
+    ua = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
+    s = cloudscraper.create_scraper(debug=True, browser={'custom': ua}, interpreter='native',
+                                    recaptcha={'provider': '2captcha', 'api_key': captcha_api})
+
     try:
         if bool(proxyList) == True:
             s.proxies = random.choice(proxyList)
-        r=s.get('https://www.off---white.com/en-de/',headers=headers,timeout=5)   
         headers_regist = {
-                'authority': 'www.off---white.com',
-                'method': 'POST',
-                'path': '/en-de/api/account/register',
-                'scheme': 'https',
                 'accept': 'application/json, text/plain, */*',
                 'accept-encoding': 'gzip, deflate, br',
-                'accept-language': 'zh-CN,zh;q=0.9,de;q=0.8',
-                'content-type': 'application/json;charset=UTF-8',
+                'accept-language': 'en-GB',
+                'content-type': 'application/json',
+                'dnt': '1',
+                'ff-country': 'DE',
+                'ff-currency': 'EUR',
                 'origin': 'https://www.off---white.com',
                 'referer': 'https://www.off---white.com/',
+                'sec-fetch-dest': 'empty',
                 'sec-fetch-mode': 'cors',
                 'sec-fetch-site': 'same-origin',
-                'user-agent': ua.random,
                 'x-newrelic-id': 'VQUCV1ZUGwIFVlBRDgcA'
         }
         data = {
-                'name': name,
-                'username': email,
-                'email': email,
-                'password': pw,
                 'countryCode': "DE",
-                'receiveNewsletters': 'false'
+                'email': email,
+                'name': names.get_full_name(),
+                'password': pw,
+                'receiveNewsletters': 'false',
+                'username': email
                 }
-        regist_api = 'https://www.off---white.com/en-de/api/account/register'
-        r = s.post(regist_api,headers=headers_regist,data=json.dumps(data).encode("utf-8"),timeout=5)
-        if r.status_code == 200:
+        regist_api = 'https://www.off---white.com/api/legacy/v1/account/register'
+        r = s.post(regist_api, headers=headers_regist, json=data, timeout=5, allow_redirects=False)
+        if r.status_code ==200:
             print(str(email)+' Successfully registed')
             acc = str(email)+':'+str(pw)
             file = open('ow_acc.txt', 'a')
             file.write(str(acc.replace('\'', '')))
             file.write("\n")
             file.close()
-    except:
+        else:
+            print(r.status_code)
+            print(str(email)+' Failed')
+    except Exception as e:
         print(str(email)+' failed')
+        print(f"Reason: {e}")
 
-def regist_real_email(email_reg,pw):
-    s =requests.session()
-    ua = UserAgent()
-    headers = {'authority':'www.off---white.com',
-               'scheme':'https',
-               'accept':'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
-               'accept-encoding':'gzip, deflate, br',
-               'accept-language':'zh-CN,zh;q=0.9,de;q=0.8',
-               'cache-control':'max-age=0',
-               'sec-fetch-mode': 'navigate',
-               'sec-fetch-site': 'none',
-               'sec-fetch-user': '?1',
-               'upgrade-insecure-requests':'1',
-               'user-agent':ua.random
-               }
+def regist_real_email(email_reg,pw, captcha_api):
+    ua = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
+    s = cloudscraper.create_scraper(debug=True, browser={'custom': ua}, interpreter='native',
+                                    recaptcha={'provider': '2captcha', 'api_key': captcha_api})
+
     try:
         if bool(proxyList) == True:
             s.proxies = random.choice(proxyList)
-        r=s.get('https://www.off---white.com/en-de/',headers=headers,timeout=5)   
         headers_regist = {
-                'authority': 'www.off---white.com',
-                'method': 'POST',
-                'path': '/en-de/api/account/register',
-                'scheme': 'https',
-                'accept': 'application/json, text/plain, */*',
-                'accept-encoding': 'gzip, deflate, br',
-                'accept-language': 'zh-CN,zh;q=0.9,de;q=0.8',
-                'content-type': 'application/json;charset=UTF-8',
-                'origin': 'https://www.off---white.com',
-                'referer': 'https://www.off---white.com/',
-                'sec-fetch-mode': 'cors',
-                'sec-fetch-site': 'same-origin',
-                'user-agent': ua.random,
-                'x-newrelic-id': 'VQUCV1ZUGwIFVlBRDgcA'
+            'authority': 'www.off---white.com',
+            'method': 'POST',
+            'path': '/api/legacy/v1/account/register',
+            'scheme': 'https',
+            'accept': 'application/json, text/plain, */*',
+            'accept-encoding': 'gzip, deflate, br',
+            'content-type': 'application/json',
+            'dnt': '1',
+            'ff-country': 'DE',
+            'ff-currency': 'EUR',
+            'origin': 'https://www.off---white.com',
+            'referer': 'https://www.off---white.com/',
+            'sec-fetch-mode': 'cors',
+            'sec-fetch-site': 'same-origin',
+            'sec-fetch-dest': 'empty',
+            'x-newrelic-id': 'VQUCV1ZUGwIFVlBRDgcA'
         }
         data = {
-                'name': names.get_full_name(),
-                'username': email_reg,
-                'email': email_reg,
-                'password': pw,
                 'countryCode': "DE",
-                'receiveNewsletters': 'false'
+                'email': email_reg,
+                'name': names.get_full_name(),
+                'password': pw,
+                'receiveNewsletters': 'false',
+                'username': email_reg
                 }
-        regist_api = 'https://www.off---white.com/en-de/api/account/register'
-        r = s.post(regist_api,headers=headers_regist,data=json.dumps(data).encode("utf-8"),timeout=5)
+        regist_api = 'https://www.off---white.com/api/legacy/v1/account/register'
+        r = s.post(regist_api, headers=headers_regist, json=data, timeout=5, allow_redirects=False)
         if r.status_code == 200:
             print(str(email_reg)+' Successfully registed')
             acc = str(email_reg)+':'+str(pw)
@@ -149,8 +131,12 @@ def regist_real_email(email_reg,pw):
             file.write(str(acc.replace('\'', '')))
             file.write("\n")
             file.close()
-    except:
+        else:
+            print(r.status_code)
+            print(str(email) + ' Failed')
+    except Exception as e:
         print(str(email_reg)+' failed')
+        print(f"Reason: {e}")
 
 if __name__ == "__main__":
     proxyList = []
@@ -166,15 +152,17 @@ if __name__ == "__main__":
     else:
         print('Loaded %s proxies!' % totalproxies)
     mode = int(input('Mode 1: catchall    Mode 2: real email  '))
-    if mode == 1:            
-        domain = input(" Catchall domain(with@) : ")
+    with open('2captcha.txt') as f:
+        captcha_api = f.read()
+    if mode == 1:
+        domain = input("Catchall domain(with@) : ")
         entryCount = int(input("Amount : "))
         pw = input('Password: ')
         for i in range(entryCount):
             name = names.get_full_name()
             ran_num = ''.join(random.sample(string.digits, 6))
-            regist(name,ran_num,domain,pw)
-            time.sleep(3)
+            regist(name, ran_num, domain, pw, captcha_api)
+            time.sleep(1)
     elif mode == 2:
         with open('email.txt') as f:
             file_content = f.read()
@@ -182,5 +170,5 @@ if __name__ == "__main__":
         for i in range(len(email)):
             pw = ''.join(random.sample(string.ascii_letters + string.digits, 10))
             email_reg = email[i]
-            regist_real_email(email_reg,pw)
-            time.sleep(3)
+            regist_real_email(email_reg, pw, captcha_api)
+            time.sleep(1)

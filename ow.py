@@ -43,7 +43,7 @@ def regist(name, ran_num, domain, pw, captcha_api):
     email = str(name)+str(ran_num)+str(domain)
     email = email.replace(' ', '')
     ua = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
-    s = cloudscraper.create_scraper(browser={'custom': ua}, interpreter='native',
+    s = cloudscraper.create_scraper(browser={'custom': ua}, interpreter='nodejs',
                                     captcha={'provider': '2captcha', 'api_key': captcha_api})
 
     try:
@@ -90,7 +90,7 @@ def regist(name, ran_num, domain, pw, captcha_api):
 
 def regist_real_email(email_reg,pw, captcha_api):
     ua = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36'
-    s = cloudscraper.create_scraper(browser={'custom': ua}, interpreter='native',
+    s = cloudscraper.create_scraper(browser={'custom': ua}, interpreter='nodejs',
                                     captcha={'provider': '2captcha', 'api_key': captcha_api})
 
     try:

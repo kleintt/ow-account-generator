@@ -2,7 +2,11 @@
 generate account for off white
 if you have any question, please contact me on discord sunyt#7055
 
+Please use Python version>=3.7
+
 First you need build python environment, then use `pip install -r requirements.txt` to install all needed module
+
+Pur your 2 captcha key in `2captcha.txt`
 
 ## Instructions:<br>
 `Mode 1`:<br> 

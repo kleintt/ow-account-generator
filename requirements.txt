@@ -1,2 +1,2 @@
-requests==2.22.0
+cloudscraper
 names==0.3.0

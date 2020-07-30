@@ -161,7 +161,7 @@ if __name__ == "__main__":
         for i in range(entryCount):
             name = names.get_full_name()
             ran_num = ''.join(random.sample(string.digits, 6))
-            regist(name, ran_num, domain, pw, captcha_api)
+            regist(name, ran_num, domain, pw, captcha_api, proxyList)
             time.sleep(1)
     elif mode == 2:
         with open('email.txt') as f:
@@ -170,5 +170,5 @@ if __name__ == "__main__":
         for i in range(len(email)):
             pw = ''.join(random.sample(string.ascii_letters + string.digits, 10))
             email_reg = email[i]
-            regist_real_email(email_reg, pw, captcha_api)
+            regist_real_email(email_reg, pw, captcha_api, proxyList)
             time.sleep(1)
